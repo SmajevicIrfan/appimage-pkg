@@ -7,8 +7,8 @@ fn main() {
     let args = Cli::parse();
 
     match args.command {
-        Commands::Install { url, file } => {
-            println!("Install from URL: {:?}, File: {:?}", url, file)
+        Commands::Install { source, name } => {
+            println!("Install from source(URL: {:?}, File: {:?}), with custom name: {:?}", source.url, source.file, name)
         }
         Commands::List { query } => println!("List with query: {:?}", query),
         Commands::Remove { name } => println!("Remove {:?}", name),

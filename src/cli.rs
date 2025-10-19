@@ -1,4 +1,4 @@
-use clap::{Parser, Subcommand};
+use clap::{Args, Parser, Subcommand};
 
 #[derive(Parser)]
 #[command(name = "appimage-pkg")]
@@ -14,13 +14,12 @@ pub enum Commands {
     /// Install an AppImage from URL or file path
     #[command(arg_required_else_help = true)]
     Install {
-        /// URL from which to install AppImage
-        #[arg(long, short = 'u', conflicts_with = "file")]
-        url: Option<String>,
+        #[command(flatten)]
+        source: InstallSource,
 
-        /// File from which to install AppImage
-        #[arg(long, short = 'f', conflicts_with = "url")]
-        file: Option<String>,
+        /// Custom name for the AppImage
+        #[arg(long, short = 'n')]
+        name: Option<String>,
     },
     /// List installed AppImages
     List {
@@ -33,4 +32,16 @@ pub enum Commands {
         /// Name of the AppImage to remove
         name: String,
     },
+}
+
+#[derive(Args)]
+#[group(required = true, multiple = false)]
+pub struct InstallSource {
+    /// URL to the AppImage
+    #[arg(long, short = 'u', conflicts_with = "file")]
+    pub url: Option<String>,
+
+    /// Path to the AppImage file
+    #[arg(long, short = 'f', conflicts_with = "url")]
+    pub file: Option<String>,
 }
