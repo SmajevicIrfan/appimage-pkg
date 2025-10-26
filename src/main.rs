@@ -1,4 +1,5 @@
 mod cli;
+mod config;
 
 use clap::Parser;
 use cli::{Cli, Commands};
@@ -6,11 +7,19 @@ use cli::{Cli, Commands};
 fn main() {
     let args = Cli::parse();
 
-    match args.command {
-        Commands::Install { source, name } => {
-            println!("Install from source(URL: {:?}, File: {:?}), with custom name: {:?}", source.url, source.file, name)
+    let config = match crate::config::load() {
+        Ok(config) => config,
+        Err(e) => {
+            eprintln!("Error: {}", e);
+            std::process::exit(1);
         }
-        Commands::List { query } => println!("List with query: {:?}", query),
-        Commands::Remove { name } => println!("Remove {:?}", name),
-    }
+    };
+
+    println!("{:?}", config);
+
+    match args.command {
+        Commands::Install { source: _, name: _ } => todo!("Implement install"),
+        Commands::List { query: _ } => todo!("Implement list"),
+        Commands::Remove { name: _ } => todo!("Implement remove"),
+    };
 }
