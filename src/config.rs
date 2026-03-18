@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Configuration {
-    pub install_dir: PathBuf,
+    install_dir: PathBuf,
 }
 
 #[derive(Debug)]
@@ -87,6 +87,10 @@ impl Configuration {
     fn to_toml(&self) -> Result<String, ConfigError> {
         toml::to_string_pretty(self)
             .map_err(|e| ConfigError::WriteError(std::io::Error::new(std::io::ErrorKind::Other, e)))
+    }
+
+    pub fn get_install_dir(&self) -> &PathBuf {
+        &self.install_dir
     }
 }
 
