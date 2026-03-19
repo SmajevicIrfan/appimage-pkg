@@ -1,5 +1,6 @@
-use std::{ffi::OsString, fs, path::PathBuf};
+use std::{fs, path::PathBuf};
 
+use appimage_pkg::{config_dir, data_dir};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -58,23 +59,6 @@ impl From<toml::de::Error> for ConfigError {
     fn from(err: toml::de::Error) -> Self {
         ConfigError::ParseError(err)
     }
-}
-
-fn is_absolute_path(path: OsString) -> Option<PathBuf> {
-    let path = PathBuf::from(path);
-    if path.is_absolute() { Some(path) } else { None }
-}
-
-fn config_dir() -> Option<PathBuf> {
-    std::env::var_os("XDG_CONFIG_HOME")
-        .and_then(is_absolute_path)
-        .or_else(|| std::env::home_dir().map(|h| h.join(".config")))
-}
-
-fn data_dir() -> Option<PathBuf> {
-    std::env::var_os("XDG_DATA_HOME")
-        .and_then(is_absolute_path)
-        .or_else(|| std::env::home_dir().map(|h| h.join(".local/share")))
 }
 
 impl Configuration {

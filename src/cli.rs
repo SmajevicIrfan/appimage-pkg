@@ -34,7 +34,7 @@ pub enum Commands {
     },
 }
 
-#[derive(Args)]
+#[derive(Args, Debug)]
 #[group(required = true, multiple = false)]
 pub struct InstallSource {
     /// URL to the AppImage

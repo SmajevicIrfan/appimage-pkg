@@ -1,8 +1,19 @@
 mod cli;
+mod commands;
 mod config;
+mod registry;
+
+use std::error::Error;
 
 use clap::Parser;
 use cli::{Cli, Commands};
+
+use crate::{config::Configuration, registry::Registry};
+
+pub struct AppContext {
+    pub config: Configuration,
+    pub registry: Registry,
+}
 
 fn main() {
     let args = Cli::parse();
@@ -15,11 +26,21 @@ fn main() {
         }
     };
 
-    println!("{:?}", config);
+    let registry = match crate::registry::load() {
+        Ok(registry) => registry,
+        Err(e) => {
+            eprintln!("Error: {}", e);
+            std::process::exit(2);
+        }
+    };
 
-    match args.command {
-        Commands::Install { source: _, name: _ } => todo!("Implement install"),
-        Commands::List { query: _ } => todo!("Implement list"),
-        Commands::Remove { name: _ } => todo!("Implement remove"),
+    let ctx = AppContext { config, registry };
+
+    let _: Result<(), Box<dyn Error>> = match args.command {
+        Commands::Install { source, name } => {
+            commands::install::execute(&ctx, &source, name.as_deref())
+        }
+        Commands::List { query } => commands::list::execute(&ctx, query.as_ref()),
+        Commands::Remove { name } => commands::remove::execute(&ctx, &name),
     };
 }
